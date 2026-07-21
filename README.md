@@ -14,7 +14,7 @@ docker run --rm -i -v "$(pwd)":/data -w /data patrickirwinoxford/docker_nemesis 
 
 ## `.kls` and `.lls` external data mounts
 
-Aliases for executables whose names begin with `Nemesis` (for example, `NemesisL` and `NemesisPT`) use the `nemesis_docker` wrapper. In addition to mounting the calculation directory at `/data`, the wrapper does the following each time it runs:
+Aliases for executables whose names begin with `Nemesis` (for example, `NemesisL` and `NemesisPT`) use the `nemesis_docker_ext_mount` wrapper. In addition to mounting the calculation directory at `/data`, the wrapper does the following each time it runs:
 
 1. Searches the current calculation directory for a single `.kls` or `.lls` file.
 2. Ignores the auxiliary files `intrad.kls` and `intrad.lls` when searching.
@@ -36,7 +36,7 @@ the first path is read from `/data/tables/h2o.tbl`. The second path causes this 
 --mount type=bind,source=/Users/me/nemesis-data,target=/Users/me/nemesis-data,readonly
 ```
 
-The wrapper stops with an error if it finds more than one calculation `.kls`/`.lls` file, or if an absolute path listed in the file does not exist. Standard aliases for all other executables use the shorter `nemesis_docker_run` helper and only mount the current directory.
+The wrapper stops with an error if it finds more than one calculation `.kls`/`.lls` file, or if an absolute path listed in the file does not exist. Standard aliases for all other executables use the shorter `nemesis_docker` helper and only mount the current directory.
 
 The Bash and zsh installers define these helpers directly in the generated shell-startup block. C shell/tcsh has no shell functions, so its generated aliases call the included `nemesis_docker_helper.sh` script (using the Bash path detected when the installer runs).
 

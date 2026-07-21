@@ -39,7 +39,7 @@ trap 'rm -f "$alias_block"' EXIT
   printf 'nemesis_docker_image=%q\n' "$IMAGE_NAME"
   cat <<'FUNCTIONS'
 # NEMESIS executables automatically mount absolute paths listed in .kls/.lls files.
-nemesis_docker() {
+nemesis_docker_ext_mount() {
     local executable="$1"
     shift
 
@@ -94,7 +94,7 @@ nemesis_docker() {
     command docker run "${docker_arguments[@]}" "$nemesis_docker_image" "$executable" "$@"
 }
 
-nemesis_docker_run() {
+nemesis_docker() {
     local executable="$1"
     shift
     command docker run --rm -i -v "$(pwd)":/data -w /data "$nemesis_docker_image" "$executable" "$@"
@@ -102,9 +102,9 @@ nemesis_docker_run() {
 FUNCTIONS
   for executable in "${executables[@]}"; do
     if [[ "$executable" == Nemesis* ]]; then
-      printf "alias %s='nemesis_docker %s'\n" "$executable" "$executable"
+      printf "alias %s='nemesis_docker_ext_mount %s'\n" "$executable" "$executable"
     else
-      printf "alias %s='nemesis_docker_run %s'\n" "$executable" "$executable"
+      printf "alias %s='nemesis_docker %s'\n" "$executable" "$executable"
     fi
   done
   printf '%s\n' "$END_MARKER"
