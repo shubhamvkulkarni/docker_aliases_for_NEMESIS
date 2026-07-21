@@ -31,7 +31,7 @@ if (( ${#list_files[@]} > 1 )); then
   exit 2
 fi
 
-declare -A mounted_directories=()
+mounted_directories=()
 if (( ${#list_files[@]} == 1 )); then
   while IFS= read -r line || [[ -n "$line" ]]; do
     line="${line#"${line%%[![:space:]]*}"}"
@@ -43,10 +43,17 @@ if (( ${#list_files[@]} == 1 )); then
       printf 'Error: external file does not exist on the host:\n       %s\n' "$line" >&2
       exit 2
     fi
-    if [[ -z "${mounted_directories[$external_directory]+x}" ]]; then
+    already_mounted=0
+    for mounted_directory in "${mounted_directories[@]-}"; do
+      if [[ "$mounted_directory" == "$external_directory" ]]; then
+        already_mounted=1
+        break
+      fi
+    done
+    if (( already_mounted == 0 )); then
       printf 'Mounting external data directory: %s\n' "$external_directory" >&2
       docker_arguments+=(--mount "type=bind,source=$external_directory,target=$external_directory,readonly")
-      mounted_directories[$external_directory]=1
+      mounted_directories+=("$external_directory")
     fi
   done < "${list_files[0]}"
 fi
